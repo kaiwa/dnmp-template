@@ -1,0 +1,31 @@
+version: '2'
+services:
+  app:
+    build:
+      context: docker/app
+    volumes:
+      - .:/var/www
+    links:
+      - db
+
+  web:
+    image: 'nginx:stable'
+    volumes:
+      - .:/var/www
+      - ./docker/web/site.conf:/etc/nginx/conf.d/site.conf
+    ports:
+      - 80:80
+    links:
+      - app
+
+  db:
+    image: 'mariadb:10.1'
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./var/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=docker
+      - MYSQL_DATABASE=app
+      - MYSQL_USER=app
+      - MYSQL_PASSWORD=app
